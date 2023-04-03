@@ -30,9 +30,11 @@ class Server():
         self.socket_accept()
 
     def clear_connection(self):
+        if self.connected:
+            self.conn.close()
+            self.sock.close()
+        
         self.connected = False
-        self.conn.close()
-        self.sock.close()
         print("clear connection")
 
 if __name__ == "__main__":

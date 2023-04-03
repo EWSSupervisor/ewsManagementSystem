@@ -53,9 +53,9 @@ class MainApplication(tk.Frame):
         self.project_name = self.project_entry.get()
         # break if user name is "admin"
         if self.user_name.lower() == "admin":
-            self.master.destroy()
             self.server.clear_connection()
-            return
+            self.master.destroy()
+            self.master.quit()
 
         if self.user_name and self.project_name:
             #TODO: add check user list method
@@ -173,10 +173,7 @@ def main(args=None):
         root.mainloop()
 
     except KeyboardInterrupt:
-        pass
-
-    finally:
-        app.server.clear_connection()
+        print("ctl-C")
 
 
 if __name__ == "__main__":
