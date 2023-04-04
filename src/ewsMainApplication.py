@@ -1,10 +1,12 @@
+import time
 import threading
 from tkinter import messagebox
 import tkinter as tk
-
+import sys
 from ewsDBManager import DBManager
 from ewsTcpServer import Server
 # TODO: add comments
+
 
 class MainApplication(tk.Frame):
     def __init__(self, master):
@@ -14,6 +16,7 @@ class MainApplication(tk.Frame):
         self.master.geometry("1000x1000")
 
         self.user_name = ""
+        self.admin_user_nmae = "admin"
         self.project_name = ""
         self.item_num = 0
         self.HOST = "localhost"
@@ -25,16 +28,18 @@ class MainApplication(tk.Frame):
         
         self.server = Server(self.HOST, self.PORT)
         self.manager = DBManager()
-        
-        self.create_widgets()
-        self.server.create_socket()
+        self.stop_event = threading.Event()
+
         self.recv_thread = threading.Thread(target=self.update_listbox)
         self.recv_thread.start()
+        self.create_widgets()
+        self.server.create_socket()
+        
 
 
     def create_widgets(self): # next : confirm_username_project
         # Username and Project name Entry
-        self.destroy_current_widgets()
+        self.destroy_current_widgets()   
         self.username_label = tk.Label(self.master, text="Enter your Username:")
         self.username_label.pack()
         self.username_entry = tk.Entry(self.master)
@@ -47,15 +52,24 @@ class MainApplication(tk.Frame):
 
         self.confirm_button = tk.Button(self.master, text="Confirm", command=self.confirm_username_project)
         self.confirm_button.pack()
-    
+
     def confirm_username_project(self): # next : create_list_widgets
         self.user_name = self.username_entry.get()
         self.project_name = self.project_entry.get()
-        # break if user name is "admin"
-        if self.user_name.lower() == "admin":
+        # break if admin user
+        if self.user_name.lower() == self.admin_user_nmae:
             self.server.clear_connection()
+            self.stop_event.set()
+            
+            print(1)
             self.master.destroy()
+            print(2)
             self.master.quit()
+            print(3)
+            time.sleep(5)
+            self.recv_thread.join()
+            print(4)
+            sys.exit()
 
         if self.user_name and self.project_name:
             #TODO: add check user list method
@@ -80,18 +94,19 @@ class MainApplication(tk.Frame):
         self.inv_list.pop(int(self.selected_item_index[0]))
 
     def update_listbox(self):
-        self.server.socket_accept()
-        while True:
-            data = self.server.recv_data()
-            if not data:
-                break
-            inventory = self.manager.create_inventory(inv_id=data.decode('utf-8'))
-            if not inventory.name:
-                self.create_error_widget()
+        while not self.stop_event.is_set():
+            self.server.socket_accept()
+            while True:
+                data = self.server.recv_data()
+                if not data:
+                    break
+                inventory = self.manager.create_inventory(inv_id=data.decode('utf-8'))
+                if not inventory.name:
+                    self.create_error_widget()
 
-            else:
-                self.listBox.insert(tk.END, inventory.id + " | " + inventory.name)
-                self.inv_list.append(inventory)
+                else:
+                    self.listBox.insert(tk.END, inventory.id + " | " + inventory.name)
+                    self.inv_list.append(inventory)
 
     def create_return_take_widget(self):  # next : create_final_check_widget
         self.destroy_current_widgets()

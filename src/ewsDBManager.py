@@ -53,7 +53,7 @@ class DBManager():
         self.__all_inv_items_cnt = 0
         self.__inv_quantity = 0
         self.__min_inv_quantity = 0
-        self.__col_num = 0
+        self.__row_num = 0
         self.remaind_num = None           # to clarify '0' or 'not defined'
         self.is_handoverable_flag = None  # to clarify 'T/F' or 'not defined'
 
@@ -65,7 +65,7 @@ class DBManager():
     def create_inventory(self, inv_id):
         self.__inputed_inv_id = inv_id
         self.set_params()
-        return Inventory(self.__inv_name, self.__inputed_inv_id, self.__inv_quantity, self.__min_inv_quantity, self.__col_num)
+        return Inventory(self.__inv_name, self.__inputed_inv_id, self.__inv_quantity, self.__min_inv_quantity, self.__row_num)
 
     def update_db(self, inv_list: List[Inventory], button_states: List[tk.Button], spin_box_list: List[tk.Spinbox]):
 
@@ -86,7 +86,6 @@ class DBManager():
 
         self.close_save()
 
-
     def set_params(self):
         self.__all_inv_list = self._set_all_inv_lists()
 
@@ -98,54 +97,16 @@ class DBManager():
             self.__inv_name = None
             self.__inv_quantity = 0
             self.__min_inv_quantity = 0
-            self.__col_num = None
+            self.__row_num = None
         
         else:
             self.__inv_name = self._set_inv_name()
             self.__inv_quantity = self._set_inv_quantity()
             self.__min_inv_quantity = self._set_min_inv_quantity() 
-            self.__col_num = self._set_col_num()
+            self.__row_num = self._set_col_num()
 
     def is_empty(self, cell):
         return cell.value is None or not str(cell.value).strip()
-
-    def _set_all_inv_lists(self):
-        all_inv_list = []
-        for row in self.ws.iter_rows(min_row=1):
-            if all(self.is_empty(c) for c in row):
-                break
-            values = []
-            for col in row:
-                values.append(col.value)
-            all_inv_list.append(values)
-        
-        return all_inv_list
-
-    def _set_all_inv_items_cnt(self):
-        return len(self.__all_inv_list)
-
-    def _set_specified_inv_list(self):
-        specified_inv_list = []
-        for l in range(self.__all_inv_items_cnt):
-            if self.__all_inv_list[l][0] == self.__inputed_inv_id:
-                specified_inv_list = [l+1, self.__all_inv_list[l][0], 
-                                        self.__all_inv_list[l][1], 
-                                        self.__all_inv_list[l][5], 
-                                        self.__all_inv_list[l][6]]
-
-        return specified_inv_list
-    
-    def _set_col_num(self):
-        return self.__specified_inv_list[0]
-
-    def _set_inv_name(self):
-        return self.__specified_inv_list[self.__name_idx]
-
-    def _set_inv_quantity(self):
-        return self.__specified_inv_list[self.__quantity_idx]
-    
-    def _set_min_inv_quantity(self):
-        return self.__specified_inv_list[self.__min_quantity_idx]
 
     def update_inv_test(self):
         # THIS IS JUST TEST
@@ -187,7 +148,45 @@ class DBManager():
         self.wb.save(self.__wb_name)
         self.wb.close()
         
+    def _set_all_inv_lists(self):
+        all_inv_list = []
+        for row in self.ws.iter_rows(min_row=1):
+            if all(self.is_empty(c) for c in row):
+                break
+            values = []
+            for col in row:
+                values.append(col.value)
+            all_inv_list.append(values)
         
+        return all_inv_list
+
+    def _set_all_inv_items_cnt(self):
+        return len(self.__all_inv_list)
+
+    def _set_specified_inv_list(self):
+        specified_inv_list = []
+        for l in range(self.__all_inv_items_cnt):
+            if self.__all_inv_list[l][0] == self.__inputed_inv_id:
+                specified_inv_list = [l+1, self.__all_inv_list[l][0], 
+                                        self.__all_inv_list[l][1], 
+                                        self.__all_inv_list[l][5], 
+                                        self.__all_inv_list[l][6]]
+
+        return specified_inv_list
+    
+    def _set_col_num(self):
+        return self.__specified_inv_list[0]
+
+    def _set_inv_name(self):
+        return self.__specified_inv_list[self.__name_idx]
+
+    def _set_inv_quantity(self):
+        return self.__specified_inv_list[self.__quantity_idx]
+    
+    def _set_min_inv_quantity(self):
+        return self.__specified_inv_list[self.__min_quantity_idx]
+
+      
 
 if __name__ == "__main__":
     dbManager = DBManager()

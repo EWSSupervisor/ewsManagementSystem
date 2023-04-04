@@ -6,6 +6,7 @@ class Server():
         self.HOST_NAME = host
         self.PORT = port
         self.connected = False
+        self.have_sock = False
 
     def create_socket(self):
         # ipv4AF_INET  tcp/ip -> SOCK_STREAM
@@ -13,14 +14,17 @@ class Server():
         self.sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         self.sock.bind((self.HOST_NAME, self.PORT))
         self.sock.listen(1)
+        self.have_sock = True
     
     def socket_accept(self):
-        self.conn, self.addr = self.sock.accept()
-        self.connected = True
-        print("accepted remote. remote_addr {}.".format(self.addr))
+        if self.have_sock:
+            self.conn, self.addr = self.sock.accept()
+            print("accepted remote. remote_addr {}.".format(self.addr))
+            self.connected = True
     
     def recv_data(self):
-        return self.conn.recv(1024)
+        if self.connected:
+            return self.conn.recv(1024)
 
     def reconnect(self):
         self.clear_connection()
