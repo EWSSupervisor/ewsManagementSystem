@@ -128,7 +128,6 @@ class MainApplication(tk.Frame):
     def get_spinbox_state(self):
         spinbox_list = [spinbox.get() for spinbox in self.spin_box_list]
         self.spin_box_list = spinbox_list
-        print(self.spin_box_list)
 
     def create_final_check_widget(self):  # next : show_thank_you
         self.get_button_states()
@@ -147,6 +146,7 @@ class MainApplication(tk.Frame):
         self.confirm_button.pack()
     
     def show_thank_you(self):  # next : create_widgets
+        self.manager.update_db(self.inv_list, self.button_states, self.spin_box_list)
         self.destroy_current_widgets()
         thank_you_label = tk.Label(self.master, font=("Helvetica", 24))
         thank_you_label.pack()

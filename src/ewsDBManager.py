@@ -1,5 +1,6 @@
 import openpyxl
-
+from typing import List
+import tkinter as tk
 #TODO: add comments
 """
 inv = inventory
@@ -7,18 +8,48 @@ cnt = count
 
 """
 
+
+class Inventory():
+    def __init__(self, inv_name=None, inv_id=None, inv_quantity=None, min_inv_quantity=None, col_num=None):
+        self.__inv_name = inv_name
+        self.__inv_id = inv_id
+        self.__inv_quantity = inv_quantity
+        self.__min_inv_quantity = min_inv_quantity
+        self.__colum_num = col_num
+    
+    @property
+    def col(self):
+        return self.__colum_num
+
+    @property
+    def name(self):
+        return self.__inv_name
+        
+    @property
+    def id(self):
+        return self.__inv_id
+    
+    @property
+    def quantity(self):
+        return self.__inv_quantity
+    
+    @property
+    def min_quantity(self):
+        return self.__min_inv_quantity
+
+
 class DBManager():
     __all_inv_list = None
     
     def __init__(self, inv_id=None, num=None):
-        __wb_name = "main_DB.xlsx"
-        __ws_name = "Main Date"
+        self.__wb_name = "main_DB.xlsx"
+        self.__ws_name = "Main Date"
 
         self.__inputed_inv_id = inv_id
         self.__inupted_inv_cnt = num
 
-        self.wb = openpyxl.load_workbook(__wb_name)
-        self.ws = self.wb[__ws_name]
+        self.wb = openpyxl.load_workbook(self.__wb_name)
+        self.ws = self.wb[self.__ws_name]
 
         self.__inv_name = ""
         self.__specified_inv_list = []
@@ -26,6 +57,7 @@ class DBManager():
         self.__all_inv_items_cnt = 0
         self.__inv_quantity = 0
         self.__min_inv_quantity = 0
+        self.__col_num = 0
         self.remaind_num = None           # to clarify '0' or 'not defined'
         self.is_handoverable_flag = None  # to clarify 'T/F' or 'not defined'
 
@@ -37,10 +69,27 @@ class DBManager():
     def create_inventory(self, inv_id):
         self.__inputed_inv_id = inv_id
         self.set_params()
-        return Inventory(self.__inv_name, self.__inputed_inv_id, self.__inv_quantity, self.__min_inv_quantity)
+        return Inventory(self.__inv_name, self.__inputed_inv_id, self.__inv_quantity, self.__min_inv_quantity, self.__col_num)
 
-    def update_db(self):
-        pass
+    def update_db(self, inv_list: List[Inventory], button_states: List[tk.Button], spin_box_list: List[tk.Spinbox]):
+
+        for inv, state, num in zip(inv_list, button_states, spin_box_list):
+            cell = self.ws.cell(row=inv.col, column=6)
+            print(cell.value)
+
+            if state == "Take":
+                cell.value = int(inv.quantity) - int(num)
+            
+            elif state == "Return":
+                cell.value = int(inv.quantity) + int(num)
+
+            else:
+                 print("undefined situaion")
+            
+            print("{} so, remian items are {}".format(state, cell.value))
+
+        self.close_save()
+
 
     def set_params(self):
         if not DBManager.__all_inv_list:
@@ -54,11 +103,13 @@ class DBManager():
             self.__inv_name = None
             self.__inv_quantity = 0
             self.__min_inv_quantity = 0
+            self.__col_num = None
         
         else:
             self.__inv_name = self._set_inv_name()
             self.__inv_quantity = self._set_inv_quantity()
             self.__min_inv_quantity = self._set_min_inv_quantity() 
+            self.__col_num = self._set_col_num()
 
     def is_empty(self, cell):
         return cell.value is None or not str(cell.value).strip()
@@ -82,9 +133,15 @@ class DBManager():
         specified_inv_list = []
         for l in range(self.__all_inv_items_cnt):
             if self.__all_inv_list[l][0] == self.__inputed_inv_id:
-                specified_inv_list = [l, self.__all_inv_list[l][0], self.__all_inv_list[l][1], self.__all_inv_list[l][5], self.__all_inv_list[l][6]]
+                specified_inv_list = [l+1, self.__all_inv_list[l][0], 
+                                        self.__all_inv_list[l][1], 
+                                        self.__all_inv_list[l][5], 
+                                        self.__all_inv_list[l][6]]
 
         return specified_inv_list
+    
+    def _set_col_num(self):
+        return self.__specified_inv_list[0]
 
     def _set_inv_name(self):
         return self.__specified_inv_list[self.__name_idx]
@@ -130,31 +187,12 @@ class DBManager():
         else: self.is_handoverable_flag = False
 
         return self.is_handoverable_flag
-
-
-class Inventory():
-    def __init__(self, inv_name=None, inv_id=None, inv_quantity=None, min_inv_quantity=None):
-        self.__inv_name = inv_name
-        self.__inv_id = inv_id
-        self.__inv_quantity = inv_quantity
-        self.__min_inv_quantity = min_inv_quantity
-
-    @property
-    def name(self):
-        return self.__inv_name
+    
+    def close_save(self):
+        self.wb.save(self.__wb_name)
+        self.wb.close()
         
-    @property
-    def id(self):
-        return self.__inv_id
-    
-    @property
-    def quantity(self):
-        return self.__inv_quantity
-    
-    @property
-    def min_quantity(self):
-        return self.__min_inv_quantity
-
+        
 
 if __name__ == "__main__":
     dbManager = DBManager()
