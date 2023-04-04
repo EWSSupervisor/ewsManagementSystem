@@ -1,11 +1,11 @@
-・admin入力時にちゃんと処理が終了するようにする。
-・update_dbを作る。
-・ClientとServerの接続を安全に行う
-    接続のタイミングや、切る時の処理
-    Error等が起きた時の対処
-    PiSugerの制御(外部電源抜き差し時にIventを発生させる)
-・item_idが見つからなかった時の処理
-・Loggerを作る
-・ReadMe.txtを書く
-・仕様書を書く
-
+[]   admin入力時にちゃんと処理が終了するようにする。
+[OK] update_dbを作る。
+[]   ClientとServerの接続を安全に行う
+        接続のタイミングや、切る時の処理
+        Error等が起きた時の対処
+        PiSugerの制御(外部電源抜き差し時にIventを発生させる)
+[]   item_idが見つからなかった時の処理
+[]   連続で操作良いような設計にする(Clientが再接続しないとダメはよくない）
+[]   Loggerを作る
+[]   ReadMe.txtを書く
+[]   仕様書を書く

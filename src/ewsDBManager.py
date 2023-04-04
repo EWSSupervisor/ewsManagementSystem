@@ -2,11 +2,6 @@ import openpyxl
 from typing import List
 import tkinter as tk
 #TODO: add comments
-"""
-inv = inventory
-cnt = count
-
-"""
 
 
 class Inventory():
@@ -17,9 +12,6 @@ class Inventory():
         self.__min_inv_quantity = min_inv_quantity
         self.__colum_num = col_num
     
-    @property
-    def col(self):
-        return self.__colum_num
 
     @property
     def name(self):
@@ -37,9 +29,12 @@ class Inventory():
     def min_quantity(self):
         return self.__min_inv_quantity
 
+    @property
+    def col(self):
+        return self.__colum_num
+
 
 class DBManager():
-    __all_inv_list = None
     
     def __init__(self, inv_id=None, num=None):
         self.__wb_name = "main_DB.xlsx"
@@ -51,6 +46,7 @@ class DBManager():
         self.wb = openpyxl.load_workbook(self.__wb_name)
         self.ws = self.wb[self.__ws_name]
 
+        self.__all_inv_list = []
         self.__inv_name = ""
         self.__specified_inv_list = []
         
@@ -73,15 +69,15 @@ class DBManager():
 
     def update_db(self, inv_list: List[Inventory], button_states: List[tk.Button], spin_box_list: List[tk.Spinbox]):
 
-        for inv, state, num in zip(inv_list, button_states, spin_box_list):
+        for inv, state, req_num in zip(inv_list, button_states, spin_box_list):
             cell = self.ws.cell(row=inv.col, column=6)
             print(cell.value)
 
             if state == "Take":
-                cell.value = int(inv.quantity) - int(num)
+                cell.value = int(inv.quantity) - int(req_num)
             
             elif state == "Return":
-                cell.value = int(inv.quantity) + int(num)
+                cell.value = int(inv.quantity) + int(req_num)
 
             else:
                  print("undefined situaion")
@@ -92,8 +88,7 @@ class DBManager():
 
 
     def set_params(self):
-        if not DBManager.__all_inv_list:
-            DBManager.__all_inv_list = self._set_all_inv_lists()
+        self.__all_inv_list = self._set_all_inv_lists()
 
         self.__all_inv_items_cnt = self._set_all_inv_items_cnt()
         self.__specified_inv_list = self._set_specified_inv_list()
