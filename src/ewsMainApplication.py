@@ -5,6 +5,7 @@ import tkinter as tk
 import sys
 from ewsDBManager import DBManager
 from ewsTcpServer import Server
+from ewsLogger import Logger
 # TODO: add comments
 
 
@@ -19,7 +20,7 @@ class MainApplication(tk.Frame):
         self.admin_user_nmae = "admin"
         self.project_name = ""
         self.item_num = 0
-        self.HOST = "localhost"
+        self.HOST = "192.168.1.90"
         self.PORT = 8080
         self.inv_list = []
 
@@ -162,6 +163,9 @@ class MainApplication(tk.Frame):
     
     def show_thank_you(self):  # next : create_widgets
         self.manager.update_db(self.inv_list, self.button_states, self.spin_box_list)
+        rem_cnt_list = self.manager.return_rem_cnt_list()
+        self.logger = Logger(self.user_name, self.project_name, self.inv_list,  self.spin_box_list, self.button_states, rem_cnt_list)
+        self.logger.log()
         self.destroy_current_widgets()
         thank_you_label = tk.Label(self.master, font=("Helvetica", 24))
         thank_you_label.pack()

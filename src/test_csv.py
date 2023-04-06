@@ -8,9 +8,9 @@ header = ['time', 'user name', 'project name', 'id', 'name', 'Return/Take','requ
 
 
 class Logger():
-    def __init__(self, user_name, project_name, inventory_list, req_num_list, rt_list, remaind_list):
-        self.user_name = user_name
-        self.project_name = project_name
+    def __init__(self, inventory_list, req_num_list, rt_list, remaind_list):
+        self.user_name = ""
+        self.project_name = ""
         self.inventory_list = inventory_list
         self.req_num_list = req_num_list
         self.remaind_list = remaind_list

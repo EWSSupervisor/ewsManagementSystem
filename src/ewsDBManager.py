@@ -49,6 +49,7 @@ class DBManager():
         self.__all_inv_list = []
         self.__inv_name = ""
         self.__specified_inv_list = []
+        self.__rem_inv_cnt_list = []
         
         self.__all_inv_items_cnt = 0
         self.__inv_quantity = 0
@@ -56,6 +57,7 @@ class DBManager():
         self.__row_num = 0
         self.remaind_num = None           # to clarify '0' or 'not defined'
         self.is_handoverable_flag = None  # to clarify 'T/F' or 'not defined'
+        self.updated_flag = False
 
         self.__name_idx = 2
         self.__quantity_idx = 3
@@ -83,8 +85,15 @@ class DBManager():
                  print("undefined situaion")
             
             print("{} so, remian items are {}".format(state, cell.value))
-
+            self.__rem_inv_cnt_list.append(cell.value)
+        self.updated_flag = True
         self.close_save()
+
+    def return_rem_cnt_list(self):
+        if self.updated_flag:
+            return self.__rem_inv_cnt_list
+        
+        return False
 
     def set_params(self):
         self.__all_inv_list = self._set_all_inv_lists()
