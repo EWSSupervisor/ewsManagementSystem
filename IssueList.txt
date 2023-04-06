@@ -6,7 +6,7 @@
 
 [OK] update_dbを作る。
 
-[]   Loggerを作る
+[OK]   Loggerを作る
 
 []   item_idが見つからなかった時の処理
 []   連続で操作良いような設計にする(Clientが再接続しないとダメはよくない）
