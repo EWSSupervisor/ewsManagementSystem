@@ -1,2 +1,2 @@
 # ewsManagementSystem
-This is for the EWS Inventory Management System (IMS)
+This is for the EWS Inventory Management System
