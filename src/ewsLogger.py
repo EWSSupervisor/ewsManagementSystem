@@ -24,16 +24,10 @@ class Logger():
     def log(self):
         with open(self.file_name, "a") as f:
             writer = csv.writer(f)
-            self.write_header()
+            if not os.path.getsize(self.file_name): # if first time user today
+                writer.writerow(self.header)
+
             writer.writerows(self.make_body())
-    
-    def write_header(self):
-        if not os.path.exists(self.file_name):
-            with open(self.file_name, 'w', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerow(self.header) # ヘッダーを書き込みます
-        else:
-            pass # if exist, do nothing
             
     def make_body(self):
         now = datetime.datetime.now()
@@ -45,5 +39,5 @@ class Logger():
 
 
 if __name__ == "__main__":
-    logger = Logger([inventory], [1], [1], [1])
+    logger = Logger("admin","test_user",[inventory], [1], [1], [1])
     logger.log()
