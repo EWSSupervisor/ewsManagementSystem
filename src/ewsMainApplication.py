@@ -37,7 +37,6 @@ class MainApplication(tk.Frame):
         self.server.create_socket()
         
 
-
     def create_widgets(self): # next : confirm_username_project
         # Username and Project name Entry
         self.destroy_current_widgets()   
@@ -59,13 +58,7 @@ class MainApplication(tk.Frame):
         self.project_name = self.project_entry.get()
         # break if admin user
         if self.user_name.lower() == self.admin_user_nmae:
-            self.server.clear_connection()
-            self.destroy_current_widgets()
-            self.stop_event.set()
-            self.master.destroy()
-            self.master.quit()
-            self.recv_thread.join()
-            sys.exit()
+            self.app_kill()
 
         if self.user_name and self.project_name:
             #TODO: add check user list method
@@ -165,6 +158,7 @@ class MainApplication(tk.Frame):
         thank_you_label = tk.Label(self.master, font=("Helvetica", 24))
         thank_you_label.pack()
         thank_you_label.config(text="Thank You !")
+        self.inv_list = []
         self.after(2000, self.create_widgets)
     
     def create_error_widget(self):
@@ -172,12 +166,21 @@ class MainApplication(tk.Frame):
         sorry_label = tk.Label(self.master, font=("Helvetica", 24))
         sorry_label.pack()
         sorry_label.config(text="Sorry we don't know such item. please ask ews superviser.")
+        self.inv_list = []
         self.after(2000, self.create_list_widgets)
 
     def destroy_current_widgets(self):
         for widget in self.master.winfo_children():
             widget.destroy()
-
+    
+    def app_kill(self):
+        self.server.clear_connection()
+        self.destroy_current_widgets()
+        self.stop_event.set()
+        self.master.destroy()
+        self.master.quit()
+        self.recv_thread.join()
+        sys.exit()
 
 def main(args=None):
     try:
