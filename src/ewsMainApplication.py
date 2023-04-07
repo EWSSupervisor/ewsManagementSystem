@@ -20,7 +20,7 @@ class MainApplication(tk.Frame):
         self.admin_user_nmae = "admin"
         self.project_name = ""
         self.item_num = 0
-        self.HOST = "192.168.1.90"
+        self.HOST = "localhost"
         self.PORT = 8080
         self.inv_list = []
 
@@ -60,16 +60,11 @@ class MainApplication(tk.Frame):
         # break if admin user
         if self.user_name.lower() == self.admin_user_nmae:
             self.server.clear_connection()
+            self.destroy_current_widgets()
             self.stop_event.set()
-            
-            print(1)
             self.master.destroy()
-            print(2)
             self.master.quit()
-            print(3)
-            time.sleep(5)
             self.recv_thread.join()
-            print(4)
             sys.exit()
 
         if self.user_name and self.project_name:

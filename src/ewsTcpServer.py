@@ -18,10 +18,15 @@ class Server():
     
     def socket_accept(self):
         if self.have_sock:
-            self.conn, self.addr = self.sock.accept()
-            print("accepted remote. remote_addr {}.".format(self.addr))
-            self.connected = True
-    
+            self.sock.settimeout(1) 
+            try:
+                if self.have_sock:
+                    self.conn, self.addr = self.sock.accept()
+                    print("accepted remote. remote_addr {}.".format(self.addr))
+                    self.connected = True
+            except:
+                return
+
     def recv_data(self):
         if self.connected:
             return self.conn.recv(1024)
