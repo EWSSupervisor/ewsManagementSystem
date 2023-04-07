@@ -8,6 +8,7 @@ class Server():
         self.connected = False
         self.have_sock = False
 
+
     def create_socket(self):
         # ipv4AF_INET  tcp/ip -> SOCK_STREAM
         #with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as self.sock :
