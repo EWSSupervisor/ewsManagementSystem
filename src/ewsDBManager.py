@@ -2,6 +2,7 @@ import openpyxl
 from typing import List
 import tkinter as tk
 #TODO: add comments
+#TODO: Add Username & Project name accesser
 
 
 class Inventory():
@@ -48,7 +49,7 @@ class DBManager():
 
         self.__all_inv_list = []
         self.__inv_name = ""
-        self.__specified_inv_list = []
+        self.__inv_atribute_list = []
         self.__rem_inv_cnt_list = []
         
         self.__all_inv_items_cnt = 0
@@ -99,10 +100,10 @@ class DBManager():
         self.__all_inv_list = self._set_all_inv_lists()
 
         self.__all_inv_items_cnt = self._set_all_inv_items_cnt()
-        self.__specified_inv_list = self._set_specified_inv_list()
+        self.__inv_atribute_list = self._set_inv_atribute_list()
         
-        #if inputed inventory name does not exist, specified_inv_list=[] so,
-        if not self.__specified_inv_list:
+        #if inputed inventory name does not exist, inv_atribute_list=[] so,
+        if not self.__inv_atribute_list:
             self.__inv_name = None
             self.__inv_quantity = 0
             self.__min_inv_quantity = 0
@@ -156,6 +157,7 @@ class DBManager():
     def close_save(self):
         self.wb.save(self.__wb_name)
         self.wb.close()
+        print("closed wd")
         
     def _set_all_inv_lists(self):
         all_inv_list = []
@@ -172,31 +174,30 @@ class DBManager():
     def _set_all_inv_items_cnt(self):
         return len(self.__all_inv_list)
 
-    def _set_specified_inv_list(self):
-        specified_inv_list = []
+    def _set_inv_atribute_list(self):
+        inv_atribute_list = []
         for l in range(self.__all_inv_items_cnt):
             if self.__all_inv_list[l][0] == self.__inputed_inv_id:
-                specified_inv_list = [l+1, self.__all_inv_list[l][0], 
+                inv_atribute_list = [l+1, self.__all_inv_list[l][0], 
                                         self.__all_inv_list[l][1], 
                                         self.__all_inv_list[l][5], 
                                         self.__all_inv_list[l][6]]
 
-        return specified_inv_list
+        return inv_atribute_list
     
     def _set_col_num(self):
-        return self.__specified_inv_list[0]
+        return self.__inv_atribute_list[0]
 
     def _set_inv_name(self):
-        return self.__specified_inv_list[self.__name_idx]
+        return self.__inv_atribute_list[self.__name_idx]
 
     def _set_inv_quantity(self):
-        return self.__specified_inv_list[self.__quantity_idx]
+        return self.__inv_atribute_list[self.__quantity_idx]
     
     def _set_min_inv_quantity(self):
-        return self.__specified_inv_list[self.__min_quantity_idx]
+        return self.__inv_atribute_list[self.__min_quantity_idx]
 
       
-
 if __name__ == "__main__":
     dbManager = DBManager()
     inventory = dbManager.create_inventory(inv_id="FTM003")

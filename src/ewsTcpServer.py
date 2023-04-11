@@ -26,11 +26,14 @@ class Server():
                     print("accepted remote. remote_addr {}.".format(self.addr))
                     self.connected = True
             except:
-                return
+                self.connected = False
 
     def recv_data(self):
         if self.connected:
             return self.conn.recv(1024)
+        else:
+            self.connected = False
+                    
 
     def reconnect(self):
         self.clear_connection()

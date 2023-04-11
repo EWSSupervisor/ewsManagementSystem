@@ -33,13 +33,25 @@ class MainApplication(tk.Frame):
 
         self.recv_thread = threading.Thread(target=self.update_listbox)
         self.recv_thread.start()
-        self.create_widgets()
+        self.create_waiting_client_widget()
         self.server.create_socket()
+    
+    def create_waiting_client_widget(self):
+        self.destroy_current_widgets()
+        if self.server.connected:
+            self.create_widgets()
         
+        else:
+            self.non_detect_label = tk.Label(self.master, text="Before you start, Please turn on Barcode Reader")
+            self.non_detect_label.pack()
+            self.after(100, self.create_waiting_client_widget)
+
 
     def create_widgets(self): # next : confirm_username_project
         # Username and Project name Entry
         self.destroy_current_widgets()   
+        self.non_detect_label = tk.Label(self.master, text="Welcome !")
+        self.non_detect_label.pack()
         self.username_label = tk.Label(self.master, text="Enter your Username:")
         self.username_label.pack()
         self.username_entry = tk.Entry(self.master)
@@ -157,9 +169,10 @@ class MainApplication(tk.Frame):
         self.destroy_current_widgets()
         thank_you_label = tk.Label(self.master, font=("Helvetica", 24))
         thank_you_label.pack()
-        thank_you_label.config(text="Thank You !")
+        thank_you_label.config(text="Thank You !\n Please turn off Barcode reader")
         self.inv_list = []
-        self.after(2000, self.create_widgets)
+        self.server.clear_connection()
+        self.after(5000, self.create_waiting_client_widget)
     
     def create_error_widget(self):
         self.destroy_current_widgets()
@@ -174,7 +187,6 @@ class MainApplication(tk.Frame):
             widget.destroy()
     
     def app_kill(self):
-        self.server.clear_connection()
         self.destroy_current_widgets()
         self.stop_event.set()
         self.master.destroy()
@@ -191,7 +203,11 @@ def main(args=None):
 
     except KeyboardInterrupt:
         print("ctl-C")
-
+        app.app_kill()
+        sys.exit()
+    
+    except OSError as e:
+        print(e)
 
 if __name__ == "__main__":
     main()

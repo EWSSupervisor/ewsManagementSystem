@@ -3,9 +3,6 @@ import os
 import datetime
 from ewsDBManager import Inventory
 
-inventory = Inventory()
-header = ['time', 'user name', 'project name', 'id', 'name', 'Return/Take','required quantity', 'remained quantity']
-
 
 class Logger():
     def __init__(self, user_name, project_name, inventory_list, req_num_list, rt_list, remaind_list):
@@ -15,8 +12,7 @@ class Logger():
         self.req_num_list = req_num_list
         self.remaind_list = remaind_list
         self.rt_list = rt_list
-        self.header = ['date', 'user name', 'project name', 'id', 'name', 'required quantity', 'ewmained quantity']
-        self.body = ""
+        self.header = ['time', 'user name', 'project name', 'id', 'name', 'Return/Take','required quantity', 'remained quantity']
         self.today = str(datetime.date.today())
         self.file_name = "../log/" + self.today + "-ews_ims_log.csv"
 
@@ -24,12 +20,12 @@ class Logger():
     def log(self):
         with open(self.file_name, "a") as f:
             writer = csv.writer(f)
-            if not os.path.getsize(self.file_name): # if first time user today
+            if not os.path.getsize(self.file_name): # if first time user today -> write header
                 writer.writerow(self.header)
 
-            writer.writerows(self.make_body())
+            writer.writerows(self._make_body())
             
-    def make_body(self):
+    def _make_body(self):
         now = datetime.datetime.now()
         body = []
         for inv, req_qtty, rt, rem_qtty in zip(self.inventory_list, self.req_num_list, self.rt_list, self.remaind_list):
@@ -39,5 +35,6 @@ class Logger():
 
 
 if __name__ == "__main__":
+    inventory = Inventory()
     logger = Logger("admin","test_user",[inventory], [1], [1], [1])
     logger.log()
