@@ -9,8 +9,8 @@ from ewsLogger import Logger
 # TODO: add comments
 
 
-class MainApplication(tk.Frame):
-    def __init__(self, master):
+class MainApplication(tk.Frame): 
+    def __init__(self, master): #Intialize UI
         super().__init__(master)
         self.master = master
         self.master.title("Project Management System")
